@@ -1,0 +1,9 @@
+services:
+  mqtt_messages:
+    image: measurements
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes: # Declare the volume
+      - .:/app/
+    container_name: measurements
