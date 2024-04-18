@@ -47,7 +47,6 @@ class AWS_MQTT_Publisher:
         print("Connected!")
 
     def publish(self, topic: str, data: dict):
-        # TODO:
         message_json = json.dumps(data)
         # Future.result() waits until a result is available
 
@@ -55,7 +54,7 @@ class AWS_MQTT_Publisher:
             topic=topic, payload=message_json, qos=mqtt.QoS.AT_LEAST_ONCE
         )
 
-        print(f"topic: {topic}, data: {data}")
+        # print(f"topic: {topic}, data: {data}")
 
     def close(self):
         print("Disconnecting...")
@@ -77,6 +76,7 @@ async def simulate_device(publisher: AWS_MQTT_Publisher, device_id: str, step_ti
         loop_sleep_time = step_time - loop_elapsed_time
 
         def run_step():
+            # TODO: Modify message
             message = {"device_id": device_id}
             publisher.publish("cpc/main", message)
 
