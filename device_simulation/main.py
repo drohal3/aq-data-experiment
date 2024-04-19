@@ -109,7 +109,7 @@ def main():
     print("creating devices...")
     devices = 3
     step_time = 1
-    message_limit = 5
+    message_limit = 300  # 5 minutes * 60 seconds = 300
     for i in range(devices):
         tasks.append(simulate_device(publisher, str(i), step_time, message_limit))
     print(f"created {devices} devices!")
