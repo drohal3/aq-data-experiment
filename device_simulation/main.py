@@ -1,9 +1,11 @@
 from dotenv import dotenv_values
 from awscrt import mqtt
 from awsiot import mqtt_connection_builder
+from datetime import datetime, timezone
 import json
 import time
 import asyncio
+import random
 
 
 ENV_AWS_MQTT_ENDPOINT = "AWS_MQTT_ENDPOINT"
@@ -54,7 +56,7 @@ class AWS_MQTT_Publisher:
             topic=topic, payload=message_json, qos=mqtt.QoS.AT_LEAST_ONCE
         )
 
-        # print(f"topic: {topic}, data: {data}")
+        print(f"topic: {topic}, data: {data}")
 
     def close(self):
         print("Disconnecting...")
@@ -65,22 +67,61 @@ class AWS_MQTT_Publisher:
 async def simulate_device(publisher: AWS_MQTT_Publisher, device_id: str, step_time: int = 1, message_limit: int = -1):
     start_time = time.time()
     loops = 0
+    previous_message = {}
+    next_data = {}
+
+    def run_step(message: dict):
+        publisher.publish("cpc/main", message)
+
+    def next_value(
+            key: str,
+            first_value: float,
+            min_value: float,
+            max_value: float,
+            min_steps_trend: int = 1,
+            max_steps_trend: int = 10
+    ):
+        previous_value = previous_message.get(key, first_value)
+        next_data_setting = next_data.get("key", None)
+
+        if next_data_setting is None:
+            next_data_setting = {}
+
+        steps = next_data_setting.get("steps", 0)
+        step_change = next_data_setting.get("step_change", 0)
+        if steps <= 0:
+            steps = random.randint(min_steps_trend, max_steps_trend) + 1
+            target_value = random.uniform(min_value, max_value)
+            difference = target_value - previous_value
+            step_change = difference / steps
+
+        steps = steps - 1
+
+        next_data[key] = {steps, step_change}
+        return previous_value + step_change
 
     while loops != message_limit:
         loops = loops + 1
         loop_start_time = time.time()
 
+        new_message = {
+            "time": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+            "device_id": device_id,
+            "temperature": next_value("temperature", 27.5, 27.0, 29.0, 1, 100),
+            "humidity": next_value("humidity", 40, 35, 65, 1, 100),
+            "pn": next_value("pn", 10000, 1000, 100000, 1, 20),
+            "co": next_value("co", 3.5, 3, 5),
+            "co2": next_value("co2", 420, 400, 500)
+        }
+
+        previous_message = new_message
+
+        await asyncio.get_event_loop().run_in_executor(None, run_step, new_message)
+
         loop_end_time = time.time()
         loop_elapsed_time = loop_end_time - loop_start_time
 
         loop_sleep_time = step_time - loop_elapsed_time
-
-        def run_step():
-            # TODO: Modify message
-            message = {"device_id": device_id}
-            publisher.publish("cpc/main", message)
-
-        await asyncio.get_event_loop().run_in_executor(None, run_step)
 
         if loop_sleep_time < 0:
             print(f"elapsed time {loop_sleep_time} is larger than step time {step_time}!")
@@ -109,9 +150,10 @@ def main():
     print("creating devices...")
     devices = 3
     step_time = 1
-    message_limit = 300  # 5 minutes * 60 seconds = 300
+    device_id_prefix = "9"
+    message_limit = 5  # 300  # 5 minutes * 60 seconds = 300
     for i in range(devices):
-        tasks.append(simulate_device(publisher, str(i), step_time, message_limit))
+        tasks.append(simulate_device(publisher, f"{device_id_prefix}{i}", step_time, message_limit))
     print(f"created {devices} devices!")
 
     print("simulating...")
