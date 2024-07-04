@@ -1,6 +1,7 @@
 from dotenv import dotenv_values
 from awscrt import mqtt
 from awsiot import mqtt_connection_builder
+import yaml
 from datetime import datetime, timezone
 import json
 import time
@@ -14,6 +15,12 @@ ENV_AWS_MQTT_CERTIFICATE_FILE = "AWS_MQTT_CERTIFICATE_FILE"
 ENV_AWS_MQTT_PRIVATE_KEY_FILE = "AWS_MQTT_PRIVATE_KEY_FILE"
 ENV_AWS_MQTT_ROOT_CA_FILE = "AWS_MQTT_ROOT_CA_FILE"
 ENV_AWS_MQTT_PORT = "AWS_MQTT_PORT"
+
+ENV_MQTT_TOPIC = "MQTT_TOPIC"
+ENV_DEVICES = "DEVICES"
+ENV_STEP_TIME = "STEP_TIME"
+ENV_DEVICE_ID_PREFIX = "DEVICE_ID_PREFIX"
+ENV_MESSAGE_LIMIT = "MESSAGE_LIMIT"
 
 def _on_connection_interrupted(connection, error, **kwargs):
     print("Connection interrupted. error: {}".format(error))
@@ -64,14 +71,23 @@ class AWS_MQTT_Publisher:
         disconnect_future.result()
         print("Disconnected!")
 
-async def simulate_device(publisher: AWS_MQTT_Publisher, device_id: str, step_time: int = 1, message_limit: int = -1):
+async def simulate_device(publisher: AWS_MQTT_Publisher, topic: str, device_id: str, step_time: int = 1, message_limit: int = -1):
     start_time = time.time()
     loops = 0
     previous_message = {}
     next_data = {}
 
+    yaml_data = []
+
+    with open("./parameters.yaml", "r") as file:
+        yaml_data = yaml.load(
+            file, Loader=yaml.Loader
+        )
+
+    print(yaml_data)
+
     def run_step(message: dict):
-        publisher.publish("cpc/main", message)
+        publisher.publish(topic, message)
 
     def next_value(
             key: str,
@@ -104,14 +120,12 @@ async def simulate_device(publisher: AWS_MQTT_Publisher, device_id: str, step_ti
         loops = loops + 1
         loop_start_time = time.time()
 
+        parameters = {yaml_data[key]["key"]: next_value(**yaml_data[key]) for key in yaml_data}
+
         new_message = {
             "time": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
             "device_id": device_id,
-            "temperature": next_value("temperature", 27.5, 27.0, 29.0, 1, 100),
-            "humidity": next_value("humidity", 40, 35, 65, 1, 100),
-            "pn": next_value("pn", 10000, 1000, 100000, 1, 20),
-            "co": next_value("co", 3.5, 3, 5),
-            "co2": next_value("co2", 420, 400, 500)
+            **parameters
         }
 
         previous_message = new_message
@@ -146,14 +160,16 @@ def main():
         client_id=env_config[ENV_AWS_MQTT_CLIENT_ID]
     )
 
+    topic = env_config[ENV_MQTT_TOPIC]
+    devices = int(env_config[ENV_DEVICES])
+    step_time = float(env_config[ENV_STEP_TIME])
+    device_id_prefix = env_config[ENV_DEVICE_ID_PREFIX]
+    message_limit = int(env_config[ENV_MESSAGE_LIMIT])  # 300  # 5 minutes * 60 seconds = 300
     tasks = []
     print("creating devices...")
-    devices = 3
-    step_time = 1
-    device_id_prefix = "9"
-    message_limit = 5  # 300  # 5 minutes * 60 seconds = 300
+
     for i in range(devices):
-        tasks.append(simulate_device(publisher, f"{device_id_prefix}{i}", step_time, message_limit))
+        tasks.append(simulate_device(publisher, topic, f"{device_id_prefix}{i}", step_time, message_limit))
     print(f"created {devices} devices!")
 
     print("simulating...")
@@ -169,4 +185,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
