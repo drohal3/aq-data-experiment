@@ -50,3 +50,74 @@ pm10:
   max_value: 100
   min_steps_trend: 1
   max_steps_trend: 30
+# ...
+test0:
+  key: "test0"
+  first_value: 0
+  min_value: 0
+  max_value: 0
+  min_steps_trend: 0
+  max_steps_trend: 0
+test1:
+  key: "test1"
+  first_value: 0
+  min_value: 0
+  max_value: 0
+  min_steps_trend: 0
+  max_steps_trend: 0
+test2:
+  key: "test2"
+  first_value: 0
+  min_value: 0
+  max_value: 0
+  min_steps_trend: 0
+  max_steps_trend: 0
+test3:
+  key: "test3"
+  first_value: 0
+  min_value: 0
+  max_value: 0
+  min_steps_trend: 0
+  max_steps_trend: 0
+test4:
+  key: "test4"
+  first_value: 0
+  min_value: 0
+  max_value: 0
+  min_steps_trend: 0
+  max_steps_trend: 0
+test5:
+  key: "test5"
+  first_value: 0
+  min_value: 0
+  max_value: 0
+  min_steps_trend: 0
+  max_steps_trend: 0
+test6:
+  key: "test6"
+  first_value: 0
+  min_value: 0
+  max_value: 0
+  min_steps_trend: 0
+  max_steps_trend: 0
+test7:
+  key: "test7"
+  first_value: 0
+  min_value: 0
+  max_value: 0
+  min_steps_trend: 0
+  max_steps_trend: 0
+test8:
+  key: "test8"
+  first_value: 0
+  min_value: 0
+  max_value: 0
+  min_steps_trend: 0
+  max_steps_trend: 0
+test9:
+  key: "test9"
+  first_value: 0
+  min_value: 0
+  max_value: 0
+  min_steps_trend: 0
+  max_steps_trend: 0
