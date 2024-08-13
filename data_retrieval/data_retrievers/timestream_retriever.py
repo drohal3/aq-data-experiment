@@ -1,5 +1,29 @@
 from .abstract_retriever import AbstractRetriever
 import boto3
+
+def format_timestream_data(data: dict) -> list:
+    rows = data['Rows']
+
+    last_time = "-1"
+    last_row = None
+    processed = []
+
+    # WARNING: the code below assumes the rows are sorted by time
+    # WARNING: the code below assumes that only one device is queried
+    for row in rows:
+        data = row["Data"]
+        time = data[1]["ScalarValue"][:19]
+        if last_time != time:
+            last_time = time
+            if last_row is not None:
+                processed.append(last_row)
+            last_row = {"time": time}
+        measure_name = data[0]["ScalarValue"]
+        value = data[2]["ScalarValue"]
+        last_row[measure_name] = value
+
+    return processed
+
 class TimestreamDBRetriever(AbstractRetriever):
     def __init__(self):
         self.client = boto3.client('timestream-query')
@@ -23,31 +47,5 @@ class TimestreamDBRetriever(AbstractRetriever):
         print(query_string)
 
         response = self.client.query(QueryString=query_string)
-        ret = {}
 
-        if raw is True:
-            ret["response"] = response
-            return ret
-
-        rows = response['Rows']
-
-        last_time = "-1"
-        last_row = None
-        processed = []
-
-        # WARNING: the code below assumes the rows are sorted by time
-        # WARNING: the code below assumes that only one device is queried
-        for row in rows:
-            data = row["Data"]
-            time = data[1]["ScalarValue"][:19]
-            if last_time != time:
-                last_time = time
-                if last_row is not None:
-                    processed.append(last_row)
-                last_row = {"time": time}
-            measure_name = data[0]["ScalarValue"]
-            value = data[2]["ScalarValue"]
-            last_row[measure_name] = value
-
-        return {"response": processed}
-
+        return response
