@@ -1,5 +1,14 @@
 from .abstract_retriever import AbstractRetriever
 import boto3
+
+def format_dynamodb_data(data: dict) -> list:
+    items = data["Items"]
+
+    for item in items:
+        pass
+
+    return [{}]
+
 class DynamoDBRetriever(AbstractRetriever):
     def __init__(self):
         # TODO: use session?
