@@ -28,11 +28,18 @@ settings:
 - provisioned capacity - it is assumed, the data loads will be predictable with no expected data bursts
 
 observations:
+- data can be queried using device_id (partition key) and time (sort key)
+- in provisioned mode, write and read capacity must be adjusted
 
 
 ### Kinesis
+settings:
+- shard hash key is calculated from device_id using md5
 
 observations:
 - max 10000 items per request
 - can't query items by device_id or timestamp... returns all content in the shard
+- as consequence of the above two, the efficiency decreases by adding devices and number of items returned and needed to be filtered out increases which leads to the need for subsequent requests.
 - requires multiple requests to find the correct shard
+
+### S3
