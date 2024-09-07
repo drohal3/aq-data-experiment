@@ -121,3 +121,87 @@ test9:
   max_value: 0
   min_steps_trend: 0
   max_steps_trend: 0
+test10:
+  key: "test10"
+  first_value: 0
+  min_value: 0
+  max_value: 0
+  min_steps_trend: 0
+  max_steps_trend: 0
+test11:
+  key: "test11"
+  first_value: 0
+  min_value: 0
+  max_value: 0
+  min_steps_trend: 0
+  max_steps_trend: 0
+test12:
+  key: "test12"
+  first_value: 0
+  min_value: 0
+  max_value: 0
+  min_steps_trend: 0
+  max_steps_trend: 0
+test13:
+  key: "test13"
+  first_value: 0
+  min_value: 0
+  max_value: 0
+  min_steps_trend: 0
+  max_steps_trend: 0
+test14:
+  key: "test14"
+  first_value: 0
+  min_value: 0
+  max_value: 0
+  min_steps_trend: 0
+  max_steps_trend: 0
+test15:
+  key: "test15"
+  first_value: 0
+  min_value: 0
+  max_value: 0
+  min_steps_trend: 0
+  max_steps_trend: 0
+test16:
+  key: "test16"
+  first_value: 0
+  min_value: 0
+  max_value: 0
+  min_steps_trend: 0
+  max_steps_trend: 0
+test17:
+  key: "test17"
+  first_value: 0
+  min_value: 0
+  max_value: 0
+  min_steps_trend: 0
+  max_steps_trend: 0
+test18:
+  key: "test18"
+  first_value: 100
+  min_value: 100
+  max_value: 100
+  min_steps_trend: 0
+  max_steps_trend: 0
+test19:
+  key: "test19"
+  first_value: 100
+  min_value: 100
+  max_value: 100
+  min_steps_trend: 0
+  max_steps_trend: 0
+test20:
+  key: "test20"
+  first_value: 100
+  min_value: 100
+  max_value: 100
+  min_steps_trend: 0
+  max_steps_trend: 0
+test21:
+  key: "test21"
+  first_value: 100
+  min_value: 100
+  max_value: 100
+  min_steps_trend: 0
+  max_steps_trend: 0
