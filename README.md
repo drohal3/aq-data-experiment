@@ -23,3 +23,16 @@ The experiment is conducted in Python with [boto3](https://boto3.amazonaws.com/v
 > Please, refer to the official boto3 documentation regarding local configuration required to access AWS resources.
 > [Official documentation](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html)
 
+### DynamoDB
+settings:
+- provisioned capacity - it is assumed, the data loads will be predictable with no expected data bursts
+
+observations:
+
+
+### Kinesis
+
+observations:
+- max 10000 items per request
+- can't query items by device_id or timestamp... returns all content in the shard
+- requires multiple requests to find the correct shard
