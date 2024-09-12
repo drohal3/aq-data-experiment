@@ -1,5 +1,7 @@
 # AWS timeseries experiment
 
+Document is work in progress!
+
 ## IoT device simulator
 Source code located in [device_simulation](./device_simulation)
 
@@ -40,7 +42,7 @@ observations:
 - max 10000 items per request
 - can't query items by device_id or timestamp... returns all content in the shard
 - as consequence of the above two, the efficiency decreases by adding devices and number of items returned and needed to be filtered out increases which leads to the need for subsequent requests.
-- requires multiple requests to find the correct shard
+- requires multiple requests to find the correct shard - delays the request!
 
 ### S3
 
