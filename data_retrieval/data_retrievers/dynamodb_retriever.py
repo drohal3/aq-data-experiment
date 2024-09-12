@@ -1,21 +1,12 @@
 from .abstract_retriever import AbstractRetriever
 import boto3
 
-def format_dynamodb_data(data: dict) -> list:
-    items = data["Items"]
-
-    for item in items:
-        pass
-
-    return [{}]
-
 class DynamoDBRetriever(AbstractRetriever):
     def __init__(self):
-        # TODO: use session?
         self.client = boto3.client('dynamodb')
 
-    def retrieve(
-            self, device: str, data_from: str, data_to: str, attributes: tuple | None = None, raw: bool = True
+    def _retrieve_raw(
+            self, device: str, data_from: str, data_to: str, attributes: tuple | None = None
     ) -> dict:
         response = self.client.query(
             TableName="aq_experiment",
@@ -32,3 +23,11 @@ class DynamoDBRetriever(AbstractRetriever):
         )
         print(response)
         return {}
+
+    def _format(self, raw_data) -> list:
+        items = raw_data["Items"]
+
+        for item in items:
+            pass
+
+        return [{}]

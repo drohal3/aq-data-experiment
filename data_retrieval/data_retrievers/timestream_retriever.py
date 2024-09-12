@@ -1,34 +1,11 @@
 from .abstract_retriever import AbstractRetriever
 import boto3
 
-def format_timestream_data(data: dict) -> list:
-    rows = data['Rows']
-
-    last_time = "-1"
-    last_row = None
-    processed = []
-
-    # WARNING: the code below assumes the rows are sorted by time
-    # WARNING: the code below assumes that only one device is queried
-    for row in rows:
-        data = row["Data"]
-        time = data[1]["ScalarValue"][:19]
-        if last_time != time:
-            last_time = time
-            if last_row is not None:
-                processed.append(last_row)
-            last_row = {"time": time}
-        measure_name = data[0]["ScalarValue"]
-        value = data[2]["ScalarValue"]
-        last_row[measure_name] = value
-
-    return processed
-
 class TimestreamDBRetriever(AbstractRetriever):
     def __init__(self):
         self.client = boto3.client('timestream-query')
 
-    def retrieve(self, device: str, data_from: str, data_to: str, attributes: tuple | None = None, raw: bool = True) -> dict:
+    def _retrieve_raw(self, device: str, data_from: str, data_to: str, attributes: tuple | None = None) -> dict:
         value_string = ""
         if attributes is not None:
             value_string = ', '.join(f"'{value}'" for value in attributes)
@@ -49,3 +26,26 @@ class TimestreamDBRetriever(AbstractRetriever):
         response = self.client.query(QueryString=query_string)
 
         return response
+
+    def _format(self, data: dict) -> list:
+        rows = data['Rows']
+
+        last_time = "-1"
+        last_row = None
+        processed = []
+
+        # WARNING: the code below assumes the rows are sorted by time
+        # WARNING: the code below assumes that only one device is queried
+        for row in rows:
+            data = row["Data"]
+            time = data[1]["ScalarValue"][:19]
+            if last_time != time:
+                last_time = time
+                if last_row is not None:
+                    processed.append(last_row)
+                last_row = {"time": time}
+            measure_name = data[0]["ScalarValue"]
+            value = data[2]["ScalarValue"]
+            last_row[measure_name] = value
+
+        return processed
