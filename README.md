@@ -43,3 +43,7 @@ observations:
 - requires multiple requests to find the correct shard
 
 ### S3
+
+observations:
+- complexity when used together with Kinesis - recent data must be retrieved from kinesis
+- 
