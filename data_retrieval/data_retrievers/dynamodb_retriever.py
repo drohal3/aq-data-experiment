@@ -6,8 +6,11 @@ class DynamoDBRetriever(AbstractRetriever):
         self.client = boto3.client('dynamodb')
 
     def _retrieve_raw(
-            self, device: str, data_from: str, data_to: str, attributes: tuple | None = None
+            self, device: str, data_from: str, data_to: str, attributes: list | None = None
     ) -> dict:
+        if attributes is not None:
+            raise NotImplementedError
+
         response = self.client.query(
             TableName="aq_experiment",
             Select="ALL_ATTRIBUTES",
