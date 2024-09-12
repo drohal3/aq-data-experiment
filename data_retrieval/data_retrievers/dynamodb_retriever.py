@@ -21,13 +21,22 @@ class DynamoDBRetriever(AbstractRetriever):
                 ':data_to': {'S': data_to}
             }
         )
-        print(response)
-        return {}
 
-    def _format(self, raw_data) -> list:
+        return response
+
+    def _format(self, raw_data: dict) -> list:
         items = raw_data["Items"]
 
-        for item in items:
-            pass
+        processed = []
 
-        return [{}]
+        for item in items:
+            # device_id = item["device_id"]["S"]
+            sample_data = item["sample_data"]["M"]
+            parameters = {}
+
+            for key in sample_data.keys():
+                sample_data_data = sample_data[key]
+                parameters[key] = sample_data_data[next(iter(sample_data_data))]
+            processed.append(parameters)
+
+        return processed
