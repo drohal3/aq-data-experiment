@@ -95,7 +95,8 @@ async def simulate_device(publisher: AWS_MQTT_Publisher, topic: str, device_id: 
             min_value: float,
             max_value: float,
             min_steps_trend: int = 1,
-            max_steps_trend: int = 10
+            max_steps_trend: int = 10,
+            round_n: int = 2
     ):
         previous_value = previous_message.get(key, first_value)
         next_data_setting = next_data.get("key", None)
@@ -114,7 +115,7 @@ async def simulate_device(publisher: AWS_MQTT_Publisher, topic: str, device_id: 
         steps = steps - 1
 
         next_data[key] = {steps, step_change}
-        return previous_value + step_change
+        return round(previous_value + step_change, round_n)
 
     while loops != message_limit:
         loops = loops + 1
