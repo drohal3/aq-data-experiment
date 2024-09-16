@@ -7,7 +7,10 @@ class AbstractRetriever(ABC):
     ) -> dict:
         raw_data = self._retrieve_raw(device, data_from, data_to, attributes)
 
-        return raw_data if raw else self._format(raw_data)
+        return {
+            "records": raw_data if raw else self._format(raw_data["records"]),
+            "stats": raw_data["stats"]
+        }
 
     @abstractmethod
     def _retrieve_raw(self, device: str, data_from: str, data_to: str, attributes: tuple | None = None):
