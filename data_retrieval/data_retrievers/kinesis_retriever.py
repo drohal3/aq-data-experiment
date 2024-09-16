@@ -118,9 +118,7 @@ class KinesisRetriever(AbstractRetriever):
         ret = []
 
         records = data_raw
-        print("data_raw: ", data_raw)
         for record in records:
-            print("<> record: ", record)
             record_data_b = record["Data"]
             json_str = record_data_b.decode('utf-8')
             data_dict = json.loads(json_str)
