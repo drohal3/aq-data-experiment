@@ -91,7 +91,7 @@ class KinesisRetriever(AbstractRetriever):
         end_time = time.time()
 
         # NOTES: this option requires more extensive processing, the stream might contain old data if published with a delay (offline measurements)
-        ret = {
+        return {
             "records": records_ret,
             "stats": {
                 "start_time": start_time,
@@ -111,8 +111,6 @@ class KinesisRetriever(AbstractRetriever):
                 "response_lengths": response_lengths
             }
         }
-
-        return ret
 
     def _format(self, data_raw: dict) -> list:
         ret = []

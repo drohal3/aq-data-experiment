@@ -37,9 +37,11 @@ observations:
 ### Kinesis
 settings:
 - shard hash key is calculated from device_id using md5
+- the implemented script does not filter returned items from the ones that belong to different devices but are stored in the same shard
+- the implemented script does not select specific parameters - returns all
 
 observations:
-- max 10000 items per request
+- max 10000 items per request (???)
 - can't query items by device_id or timestamp (kinda can with kinesis iterator "at_timestamp")... returns all content in the shard
 - as consequence of the above two, the efficiency decreases by adding devices and number of items returned and needed to be filtered out increases which leads to the need for subsequent requests.
 - requires multiple requests to find the correct shard - delays the request!

@@ -1,5 +1,6 @@
 from .abstract_retriever import AbstractRetriever
 import boto3
+import time
 
 class DynamoDBRetriever(AbstractRetriever):
     def __init__(self):
@@ -10,6 +11,8 @@ class DynamoDBRetriever(AbstractRetriever):
     ) -> dict:
         if attributes is not None:
             raise NotImplementedError
+
+        start_time = time.time()
 
         response = self.client.query(
             TableName="aq_experiment",
@@ -25,7 +28,16 @@ class DynamoDBRetriever(AbstractRetriever):
             }
         )
 
-        return response
+        end_time = time.time()
+
+        return {
+            "records": response,
+            "stats": {
+                "start_time": start_time,
+                "end_time": end_time,
+                "elapsed": end_time - start_time
+            }
+        }
 
     def _format(self, raw_data: dict) -> list:
         items = raw_data["Items"]
