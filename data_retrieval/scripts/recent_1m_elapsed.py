@@ -3,7 +3,7 @@ import json
 
 data_dynamo = []
 
-with open('local/DynamoDBRetriever_1m.txt', 'r') as file:
+with open('local/recent_1m/DynamoDBRetriever_1m.txt', 'r') as file:
     # Read each line in the file
     for line in file:
         # Strip newline characters and print each line
@@ -11,7 +11,7 @@ with open('local/DynamoDBRetriever_1m.txt', 'r') as file:
         data_dynamo.append(json_line["response_stats"]["elapsed"])
 
 data_kinesis = []
-with open('local/KinesisRetriever_1m.txt', 'r') as file:
+with open('local/recent_1m/KinesisRetriever_1m.txt', 'r') as file:
     # Read each line in the file
     for line in file:
         # Strip newline characters and print each line
@@ -19,7 +19,7 @@ with open('local/KinesisRetriever_1m.txt', 'r') as file:
         data_kinesis.append(json_line["response_stats"]["elapsed"])
 
 data_timestream = []
-with open('local/TimestreamDBRetriever_1m.txt', 'r') as file:
+with open('local/recent_1m/TimestreamDBRetriever_1m.txt', 'r') as file:
     # Read each line in the file
     for line in file:
         # Strip newline characters and print each line
