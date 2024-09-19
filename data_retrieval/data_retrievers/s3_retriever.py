@@ -2,6 +2,7 @@ from .abstract_retriever import AbstractRetriever
 from datetime import datetime, timedelta
 import boto3
 import json
+import time
 
 STREAM_NAME = "aq-data-stream"
 DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
@@ -14,7 +15,7 @@ class S3Retriever(AbstractRetriever):
 
     def _retrieve_raw(self, device: str, data_from: str, data_to: str, attributes: tuple | None = None) -> dict:
         # key = "data/device_id=test_1/year:2024/month:09/day:07/hour:11/terraform-kinesis-firehose-extended-s3-test-stream-3-2024-09-07-11-21-19-13dbaf12-8ca8-3761-93dd-651fcf2e96ed"
-
+        start_time = time.time()
         date_str = data_from
 
         contents = []
@@ -40,9 +41,7 @@ class S3Retriever(AbstractRetriever):
             date_str = next_date.strftime(DATE_TIME_FORMAT)
 
         contents_list = []
-
         for content in contents:
-            key = content["Key"]
             response = self.client.get_object(
                 Bucket=self.BUCKET,
                 Key=content['Key']
@@ -50,11 +49,18 @@ class S3Retriever(AbstractRetriever):
 
             contents_list.append(response["Body"].read().decode('utf-8'))
 
+        end_time = time.time()
+
         return {
             "records": {
                 "files_contents": contents_list
             },
-            "stats": {}
+            "stats": {
+                "start_time": start_time,
+                "end_time": end_time,
+                "elapsed": end_time - start_time,
+                "files": len(contents)
+            }
         }
 
     def _format(self, data: dict) -> list:
