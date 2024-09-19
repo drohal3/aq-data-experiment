@@ -5,8 +5,8 @@ from datetime import datetime, timezone, timedelta
 
 DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
-MINUTES = 1
-DEVICES = 2
+MINUTES = 30
+DEVICES = 100
 
 def run_experiment():
     device_prefix = "test_"
