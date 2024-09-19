@@ -15,7 +15,7 @@ class DynamoDBRetriever(AbstractRetriever):
         start_time = time.time()
 
         response = self.client.query(
-            TableName="aq_experiment",
+            TableName="aq_measurements_experiment",
             Select="ALL_ATTRIBUTES",
             KeyConditionExpression='device_id = :device_id AND #time BETWEEN :data_from AND :data_to',
             ExpressionAttributeNames={
