@@ -24,28 +24,58 @@ class TimestreamDBRetriever(AbstractRetriever):
             ORDER BY time, measure_name
         """
 
-        get_records_start = time.time()
-        response = self.client.query(QueryString=query_string)
-        get_records_end = time.time()
+        print("Query string:", query_string)
+
+        requests_stats = []
+        rows = []
+        empty_rows = 0
+        next_token = None
+        while True:
+            if empty_rows > 3:
+                break
+            get_records_start = time.time()
+            response = self.client.query(QueryString=query_string) if next_token is None else self.client.query(QueryString=query_string, NextToken=next_token)
+            get_records_end = time.time()
+            rows_r = response['Rows']
+            response_length = len(rows_r)
+            if response_length == 0:
+                empty_rows += 1
+            else:
+                empty_rows = 0
+                rows.extend(rows_r)
+            stats = {
+                "get_records_start": get_records_start,
+                "get_records_end": get_records_end,
+                "get_records_elapsed": get_records_end - get_records_start,
+                "rows": response_length,
+            }
+
+            requests_stats.append(stats)
+            next_token = None if "NextToken" not in response else response["NextToken"]
+
+            if next_token is None:
+                break
 
         end_time = time.time()
 
-        response["device_id"] = device
-
         return {
-            "records": response,
+            "records": {
+                "rows": rows,
+                "device_id": device
+            },
             "stats": {
                 "start_time": start_time,
                 "end_time": end_time,
                 "elapsed": end_time - start_time,
-                "get_records_start": get_records_start,
-                "get_records_end": get_records_end,
-                "get_records_elapsed": get_records_end - get_records_start
+                "requests_stats": requests_stats,
+                "requests": len(requests_stats)
             }
         }
 
     def _format(self, data: dict) -> list:
-        rows = data['Rows']
+        # print("===> ===> ", data)
+        # return []
+        rows = data['rows']
         device_id = data['device_id']
         last_time = "-1"
         last_row = None
