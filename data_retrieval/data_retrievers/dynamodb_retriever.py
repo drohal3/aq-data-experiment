@@ -104,7 +104,7 @@ class DynamoDBRetriever(AbstractRetriever):
                 "data_from": data_from,
                 "data_to": data_to,
                 "elapsed": elapsed_time,
-                "requests": requests_stats
+                "query_requests": requests_stats
             }
         }
 
