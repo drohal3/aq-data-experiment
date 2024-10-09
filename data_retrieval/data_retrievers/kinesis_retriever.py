@@ -4,15 +4,15 @@ from .abstract_retriever import AbstractRetriever
 import boto3
 import hashlib
 import json
-from datetime import timezone
 
 # TODO: mention alternative https://docs.aws.amazon.com/streams/latest/dev/shared-throughput-kcl-consumers.html in thesis!
 
 STREAM_NAME = "aq-data-stream"
+LOOPS_EMPTY_LIMIT = 5
 
 class KinesisRetriever(AbstractRetriever):
     def __init__(self):
-        self.client = boto3.client('kinesis', )
+        self.client = boto3.client('kinesis')
 
     def _retrieve_raw(self, device: str, data_from: str, data_to: str, attributes: tuple | None = None) -> dict:
         # WARNING: all data in the shard returned, not only with the ID
@@ -45,70 +45,64 @@ class KinesisRetriever(AbstractRetriever):
             ShardIteratorType="AT_TIMESTAMP",
             Timestamp=data_from
         )
-
         shard_iterator_end = time.time()
 
         get_records_start = time.time()
-
-        loops_total = 0
-        loop_empty_row_limit = 5
         loops_empty = 0
-        loops_empty_total = 0
-        response_lengths = []
         next_shard_iterator = shard_iterator["ShardIterator"]
+        last_item_time = data_from
 
-        records_ret = []
+        items = []
+        get_records_requests = []
+        while last_item_time <= data_to:
+            if loops_empty > LOOPS_EMPTY_LIMIT:
+                break
 
-        while True:
-            loops_total += 1
-            records = self.client.get_records(
+            get_record_start = time.time()
+            response = self.client.get_records(
                 StreamARN=stream_arn,
-                ShardIterator=next_shard_iterator
+                ShardIterator=next_shard_iterator,
             )
+            get_record_end = time.time()
 
-            next_shard_iterator = records["NextShardIterator"]
-            records_items = records["Records"]
-            records_length = len(records_items)
-            response_lengths.append(records_length)
-            if records_length != 0:
-                records_ret += records_items
+            next_shard_iterator = response["NextShardIterator"]
+            response_items = response["Records"]
+            response_items_length = len(response_items)
+
+            stats = {
+                "elapsed": get_record_end - get_record_start,
+                "items_length": response_items_length,
+            }
+
+            if response_items_length > 0:
                 loops_empty = 0
-                last_record = records_items[-1]
-                dt = last_record["ApproximateArrivalTimestamp"]
-                utc_dt_last_record = dt.astimezone(timezone.utc)
-                utc_dt_last_record_str = utc_dt_last_record.strftime("%Y-%m-%d %H:%M:%S")
+                first_item = response_items[0]
+                last_item = response_items[-1]
 
-                if utc_dt_last_record_str <= data_to:
-                    continue
+                items.extend(response_items)
+
+                first_item_time = json.loads(first_item["Data"].decode('utf-8'))["time"]
+                last_item_time = json.loads(last_item["Data"].decode('utf-8'))["time"]
+
+                stats["first_item_time"] = first_item_time
+                stats["last_item_time"] = last_item_time
             else:
                 loops_empty += 1
-                loops_empty_total += 1
-                if loop_empty_row_limit > loops_empty:
-                    continue
-            break
-        get_records_end = time.time()
 
-        end_time = time.time()
+            get_records_requests.append(stats)
 
-        # NOTES: this option requires more extensive processing, the stream might contain old data if published with a delay (offline measurements)
+        end_time = get_records_end = time.time()
+
         return {
-            "records": records_ret,
+            "records": items,
             "stats": {
-                "start_time": start_time,
-                "end_time": end_time,
-                "describe_stream_start": describe_stream_start,
-                "describe_stream_end": describe_stream_end,
-                "shard_iterator_start": shard_iterator_start,
-                "shard_iterator_end": shard_iterator_end,
-                "get_records_start": get_records_start,
-                "get_records_end": get_records_end,
+                "data_from": data_from,
+                "data_to": data_to,
                 "elapsed": end_time - start_time,
-                "describe_stream_elapsed": describe_stream_end - describe_stream_start,
-                "shard_iterator_elapsed": shard_iterator_end - shard_iterator_start,
-                "get_records_elapsed": get_records_end - get_records_start,
-                "get_requests": loops_total,
-                "get_requests_empty": loops_empty_total,
-                "response_lengths": response_lengths
+                "describe_stream_request_elapsed": describe_stream_end - describe_stream_start,
+                "get_shard_iterator_elapsed": shard_iterator_end - shard_iterator_start,
+                "get_records_request_elapsed": get_records_end - get_records_start,
+                "get_record_requests": get_records_requests
             }
         }
 
