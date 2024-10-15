@@ -74,6 +74,8 @@ class S3Retriever(AbstractRetriever):
                 "files_contents": contents_list
             },
             "stats": {
+                "data_from": data_from,
+                "data_to": data_to,
                 "elapsed": end_time - start_time,
                 "list_objects_requests_elapsed": list_objects_requests_end - list_objects_requests_start,
                 "list_objects_requests": list_objects_requests,

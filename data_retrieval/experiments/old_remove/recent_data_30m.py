@@ -1,9 +1,11 @@
 import time
 import json
-from data_retrievers import DynamoDBRetrieverV2, KinesisRetriever, TimestreamDBRetriever
+from data_retrievers import DynamoDBRetriever, KinesisRetriever, TimestreamDBRetriever
 from datetime import datetime, timezone, timedelta
 
 DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+DYNAMODB_TABLE = "aq_measurements_experiment"
 
 MINUTES = 30
 DEVICES = 100
@@ -14,7 +16,7 @@ def run_experiment():
 
     retrievers = [
         KinesisRetriever(),
-        DynamoDBRetrieverV2(),
+        DynamoDBRetriever(DYNAMODB_TABLE),
         TimestreamDBRetriever()
     ]
 

@@ -3,8 +3,10 @@ import boto3
 import time
 
 class TimestreamDBRetriever(AbstractRetriever):
-    def __init__(self):
+    def __init__(self, database: str, table: str):
         self.client = boto3.client('timestream-query')
+        self.database = database
+        self.table = table
 
     def _retrieve_raw(self, device: str, data_from: str, data_to: str, attributes: list | None = None) -> dict:
         start_time = time.time()
@@ -16,7 +18,7 @@ class TimestreamDBRetriever(AbstractRetriever):
 
         query_string = f"""
             SELECT measure_name, time, measure_value::double
-            FROM "aq-time-stream"."aq_data"
+            FROM "{self.database}"."{self.table}"
             WHERE {measurement_condition}
             device_id = '{device}'
             AND time >= '{data_from}.000000000' 
@@ -24,9 +26,7 @@ class TimestreamDBRetriever(AbstractRetriever):
             ORDER BY time, measure_name
         """
 
-        print("Query string:", query_string)
-
-        requests_stats = []
+        query_requests = []
         rows = []
         empty_rows = 0
         next_token = None
@@ -38,19 +38,25 @@ class TimestreamDBRetriever(AbstractRetriever):
             get_records_end = time.time()
             rows_r = response['Rows']
             response_length = len(rows_r)
+            row_stats = {}
             if response_length == 0:
                 empty_rows += 1
             else:
                 empty_rows = 0
                 rows.extend(rows_r)
-            stats = {
-                "get_records_start": get_records_start,
-                "get_records_end": get_records_end,
-                "get_records_elapsed": get_records_end - get_records_start,
-                "rows": response_length,
-            }
 
-            requests_stats.append(stats)
+                first_row = rows_r[0]
+                last_row = rows_r[-1]
+
+                row_stats["first_item_time"] = first_row["Data"][1]["ScalarValue"][:19]
+                row_stats["last_item_time"] = last_row["Data"][1]["ScalarValue"][:19]
+
+            query_requests.append({
+                "get_records_elapsed": get_records_end - get_records_start,
+                "item_number": response_length,
+                **row_stats
+            })
+
             next_token = None if "NextToken" not in response else response["NextToken"]
 
             if next_token is None:
@@ -64,11 +70,10 @@ class TimestreamDBRetriever(AbstractRetriever):
                 "device_id": device
             },
             "stats": {
-                "start_time": start_time,
-                "end_time": end_time,
+                "data_from": data_from,
+                "data_to": data_to,
                 "elapsed": end_time - start_time,
-                "requests_stats": requests_stats,
-                "requests": len(requests_stats)
+                "query_requests": query_requests,
             }
         }
 

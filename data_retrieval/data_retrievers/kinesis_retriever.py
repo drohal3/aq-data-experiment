@@ -7,12 +7,12 @@ import json
 
 # TODO: mention alternative https://docs.aws.amazon.com/streams/latest/dev/shared-throughput-kcl-consumers.html in thesis!
 
-STREAM_NAME = "aq-data-stream"
 LOOPS_EMPTY_LIMIT = 5
 
 class KinesisRetriever(AbstractRetriever):
-    def __init__(self):
+    def __init__(self, stream_name: str):
         self.client = boto3.client('kinesis')
+        self.stream_name = stream_name
 
     def _retrieve_raw(self, device: str, data_from: str, data_to: str, attributes: tuple | None = None) -> dict:
         # WARNING: all data in the shard returned, not only with the ID
@@ -24,7 +24,7 @@ class KinesisRetriever(AbstractRetriever):
         hash_key = int(md5_hash, 16)
 
         describe_stream_start = time.time()
-        describe_stream = self.client.describe_stream(StreamName=STREAM_NAME)
+        describe_stream = self.client.describe_stream(StreamName=self.stream_name)
         describe_stream_end = time.time()
 
         stream_arn = describe_stream["StreamDescription"]["StreamARN"]
@@ -40,7 +40,7 @@ class KinesisRetriever(AbstractRetriever):
 
         shard_iterator_start = time.time()
         shard_iterator = self.client.get_shard_iterator(
-            StreamName=STREAM_NAME,
+            StreamName=self.stream_name,
             ShardId=shard_id_by_partition_key,
             ShardIteratorType="AT_TIMESTAMP",
             Timestamp=data_from
