@@ -20,7 +20,7 @@ class S3Retriever(AbstractRetriever):
         contents = []
         list_objects_requests = []
         while date_str <= data_to:
-            print(date_str)
+            # print(date_str)
             date = datetime.strptime(date_str, DATE_TIME_FORMAT)
             next_date = date + timedelta(hours=1)
 
