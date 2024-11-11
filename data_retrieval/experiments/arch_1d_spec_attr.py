@@ -15,11 +15,12 @@ TIME_FROM = "2024-10-18 12:00:00"
 TIME_TO = "2024-10-19 11:59:59"
 
 
-DEVICES = 100
+DEVICES = 10
+FIRST_DEVICE = 90
 def run_experiment():
     device_prefix = "test_"
     leading_zeros = 2
-    devices = [f"{device_prefix}{i:0{leading_zeros}}" for i in range(DEVICES)]
+    devices = [f"{device_prefix}{(i + FIRST_DEVICE):0{leading_zeros}}" for i in range(DEVICES)]
 
     attributes = ["key05"]
     # attributes = None
@@ -50,7 +51,7 @@ def run_experiment():
                 first_item = records[0]
                 first_item_time = first_item["time"]
 
-                f = open(f"local/arch_1d_all_attr/devices/{retriever.__class__.__name__}_{device}.txt", "a")
+                f = open(f"local/arch_1d_spec_attr/devices/{retriever.__class__.__name__}_{device}.txt", "a")
                 for record in records:
                     f.write(f"{json.dumps(record)}\n")
                 f.close()
@@ -72,6 +73,6 @@ def run_experiment():
                 "records_length": records_length,
                 "response_stats": response["stats"]
             }
-            f = open(f"local/arch_1d_all_attr/{retriever.__class__.__name__}.txt", "a")
+            f = open(f"local/arch_1d_spec_attr/{retriever.__class__.__name__}.txt", "a")
             f.write(f"{json.dumps(stats)}\n")
             f.close()

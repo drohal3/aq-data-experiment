@@ -1,29 +1,45 @@
 from data_retrievers import TimestreamDBRetriever, DynamoDBRetriever, KinesisRetriever, S3Retriever
-from experiments import recent_data
+from experiments import recent_1m, recent_1m_spec_attr, recent_30m, recent_30m_spec_attr, arch_1d, arch_1d_spec_attr
+# from experiments import recent_data_30m, arch_data_1h, recent_data_1m_v2
+import json
+
+DYNAMODB_TABLE = "aq_measurements_experiment"
+S3_BUCKET = "idealaq-aq-measurements-bucket"
+KINESIS_STREAM_NAME = "aq-data-stream"
+TIMESTREAM_DATABASE = "aq-time-stream"
+TIMESTREAM_TABLE = "aq_data"
+
 def main():
-    device = "test_0"
-    data_from = "2024-09-17 11:22:30"
-    data_to = "2024-09-17 11:22:39"
-    attributes = ["time", "key01", "key02", "key14"]
+    device = "test_00"
+    data_from = "2024-10-09 16:30:11"
+    data_to = "2024-10-09 16:30:25"
+    attributes = ["key00"]
 
-    # recent_data.run_experiment()
+    arch_1d.run_experiment()
+    # attributes = None
 
-    retriever_timestream = TimestreamDBRetriever()
-    data = retriever_timestream.retrieve(device, data_from, data_to, None, False)
+    # recent_data_1m_v2.run_experiment()
 
-    # retriever_dynamodb = DynamoDBRetriever()
-    # data = retriever_dynamodb.retrieve(device, data_from, data_to, None, False)
+    # recent_data_30m.run_experiment()
+
+    # arch_data_1h.run_experiment()
+
+    # retriever_timestream = TimestreamDBRetriever(TIMESTREAM_DATABASE, TIMESTREAM_TABLE)
+    # data = retriever_timestream.retrieve(device, data_from, data_to, attributes, False)
+
+    # retriever_dynamodb = DynamoDBRetriever(DYNAMODB_TABLE)
+    # data = retriever_dynamodb.retrieve(device, data_from, data_to, attributes, False)
 
     # retriever_kinesis = KinesisRetriever()
     # data = retriever_kinesis.retrieve(device, data_from, data_to, None, False)
 
-    # retriever_s3 = S3Retriever()
-    # retriever_s3.retrieve(device, data_from, data_to, attributes, True)
+    # retriever_s3 = S3Retriever(S3_BUCKET)
+    # data = retriever_s3.retrieve(device, data_from, data_to, attributes, False)
 
     # ####################################
     # print
-    describe_records(data["records"])
-    describe_stats(data["stats"])
+    # describe_records(data["records"])
+    # describe_stats(data["stats"])
 
 def describe_stats(stats: dict):
     print("###################### stats ######################")

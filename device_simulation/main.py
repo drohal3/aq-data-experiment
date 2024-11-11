@@ -63,7 +63,7 @@ class AWS_MQTT_Publisher:
             topic=topic, payload=message_json, qos=mqtt.QoS.AT_LEAST_ONCE
         )
 
-        print(f"topic: {topic}, data: {data}")
+        # print(f"topic: {topic}, data: {data}")
 
     def close(self):
         print("Disconnecting...")
@@ -84,7 +84,7 @@ async def simulate_device(publisher: AWS_MQTT_Publisher, topic: str, device_id: 
             file, Loader=yaml.Loader
         )
 
-    print(yaml_data)
+    # print(yaml_data)
 
     def run_step(message: dict):
         publisher.publish(topic, message)
@@ -166,11 +166,11 @@ def main():
     step_time = float(env_config[ENV_STEP_TIME])
     device_id_prefix = env_config[ENV_DEVICE_ID_PREFIX]
     message_limit = int(env_config[ENV_MESSAGE_LIMIT])  # 300  # 5 minutes * 60 seconds = 300
+    leading_zeros = 2
     tasks = []
     print("creating devices...")
-
     for i in range(devices):
-        tasks.append(simulate_device(publisher, topic, f"{device_id_prefix}{i}", step_time, message_limit))
+        tasks.append(simulate_device(publisher, topic, f"{device_id_prefix}{i:0{leading_zeros}}", step_time, message_limit))
     print(f"created {devices} devices!")
 
     print("simulating...")

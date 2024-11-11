@@ -40,7 +40,7 @@ print(f"Timestream median: {statistics.median(data_timestream)}")
 data = [data_dynamo, data_kinesis, data_timestream]
 # Create box plot
 plt.boxplot(data)
-plt.title("Retrieval time of 1m recent data")
+# plt.title("Retrieval time of 1m recent data")
 plt.ylabel("seconds")
 plt.xticks([1, 2, 3], ["DynamoDB", "Kinesis Data Stream", "Timestream"])
 plt.show()
