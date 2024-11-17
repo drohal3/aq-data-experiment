@@ -21,6 +21,8 @@ Installed docker and docker-compose.
 | MESSAGE_LIMIT             | maximum number of simulated measurements per device |                                               100000 |
 
 ## Instructions
+- create `local` directory in [device_simulation](.) rood directory
+- place IoT device certificates in the directory ([tutorial](https://docs.aws.amazon.com/iot/latest/developerguide/iot-gs.html))
 - configure .env file
 - run `docker-compose up` from [device_simulation](.) root directory
 
