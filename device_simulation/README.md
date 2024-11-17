@@ -1,38 +1,28 @@
-requires docker
+# Device simulation
+## Prerequisite
+Installed docker and docker-compose.
 
-```bash
-docker-compose up
-```
+## Configuration
+### ENV variables
+> you can use [.env.sample](./.env.sapmle) file as template with `cp .env.sample .env` in [device_simulation](.) root directory
 
-Running with 3 devices sending 1 message per second, 5 messages in total each:
-```
-rohal@Dominiks-MacBook-Air connect_device_package % docker-compose up
-[+] Running 1/0
- ⠿ Container measurements  Created                                                                                                                                     0.0s
-Attaching to measurements
-measurements  | Connecting to <???>.eu-central-1.amazonaws.com with client ID 'cpc-testClient'...
-measurements  | Connected!
-measurements  | creating devices...
-measurements  | created 3 devices!
-measurements  | simulating...
-measurements  | topic: cpc/main, data: {'device_id': '0'}
-measurements  | topic: cpc/main, data: {'device_id': '1'}
-measurements  | topic: cpc/main, data: {'device_id': '2'}
-measurements  | topic: cpc/main, data: {'device_id': '0'}
-measurements  | topic: cpc/main, data: {'device_id': '1'}
-measurements  | topic: cpc/main, data: {'device_id': '2'}
-measurements  | topic: cpc/main, data: {'device_id': '0'}
-measurements  | topic: cpc/main, data: {'device_id': '1'}
-measurements  | topic: cpc/main, data: {'device_id': '2'}
-measurements  | topic: cpc/main, data: {'device_id': '0'}
-measurements  | topic: cpc/main, data: {'device_id': '1'}
-measurements  | topic: cpc/main, data: {'device_id': '2'}
-measurements  | topic: cpc/main, data: {'device_id': '0'}
-measurements  | topic: cpc/main, data: {'device_id': '1'}
-measurements  | topic: cpc/main, data: {'device_id': '2'}
-measurements  | Simulation of device 0 finished after 5.026923894882202 seconds!
-measurements  | Simulation of device 1 finished after 5.024030447006226 seconds!
-measurements  | Simulation of device 2 finished after 5.0239222049713135 seconds!
-measurements  | elapsed time: 5.028521537780762
-measurements exited with code 0
-```
+| variable                  |                     description                     |                                              example |
+|---------------------------|:---------------------------------------------------:|-----------------------------------------------------:|
+| AWS_MQTT_ENDPOINT         |                                                     |                     <???>.eu-central-1.amazonaws.com |
+| AWS_MQTT_CLIENT_ID        |                                                     |                                           testClient |
+| AWS_MQTT_CERTIFICATE_FILE |        device certificate file from AWS path        | /app/local/connect_device_package/deviceCert.crt.pem |
+| AWS_MQTT_PRIVATE_KEY_FILE |          device private key from AWS path           |     /app/local/connect_device_package/privateKey.key |
+| AWS_MQTT_ROOT_CA_FILE     |                    CA file path                     |        /app/local/connect_device_package/root-CA.crt |
+| AWS_MQTT_PORT             |                      MQTT port                      |                                                 8883 |
+| MQTT_TOPIC                |                     MQTT topic                      |                                      test/experiment |
+| DEVICE_ID_PREFIX          |            prefix for device identifier             |                                                test_ |
+| STEP_TIME                 |                step time in seconds                 |                                                    1 |
+| DEVICES                   |             number of simulated devices             |                                                  100 |
+| MESSAGE_LIMIT             | maximum number of simulated measurements per device |                                               100000 |
+
+## Instructions
+- configure .env file
+- run `docker-compose up` from [device_simulation](.) root directory
+
+> for longer experiments, you might consider to provision an EC2 instance from AWS 
+
