@@ -1,4 +1,3 @@
-import time
 import json
 from data_retrievers import S3Retriever, DynamoDBRetriever, TimestreamDBRetriever
 from datetime import datetime, timezone, timedelta
@@ -50,7 +49,7 @@ def run_experiment():
                 first_item = records[0]
                 first_item_time = first_item["time"]
 
-                f = open(f"local/arch_1d_all_attr/devices/{retriever.__class__.__name__}_{device}.txt", "a")
+                f = open(f"../local/arch_1d_all_attr/devices/{retriever.__class__.__name__}_{device}.txt", "a")
                 for record in records:
                     f.write(f"{json.dumps(record)}\n")
                 f.close()
@@ -72,6 +71,6 @@ def run_experiment():
                 "records_length": records_length,
                 "response_stats": response["stats"]
             }
-            f = open(f"local/arch_1d_all_attr/{retriever.__class__.__name__}.txt", "a")
+            f = open(f"../local/arch_1d_all_attr/{retriever.__class__.__name__}.txt", "a")
             f.write(f"{json.dumps(stats)}\n")
             f.close()

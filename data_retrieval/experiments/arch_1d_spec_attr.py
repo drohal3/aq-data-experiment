@@ -51,7 +51,7 @@ def run_experiment():
                 first_item = records[0]
                 first_item_time = first_item["time"]
 
-                f = open(f"local/arch_1d_spec_attr/devices/{retriever.__class__.__name__}_{device}.txt", "a")
+                f = open(f"../local/arch_1d_spec_attr/devices/{retriever.__class__.__name__}_{device}.txt", "a")
                 for record in records:
                     f.write(f"{json.dumps(record)}\n")
                 f.close()
@@ -73,6 +73,6 @@ def run_experiment():
                 "records_length": records_length,
                 "response_stats": response["stats"]
             }
-            f = open(f"local/arch_1d_spec_attr/{retriever.__class__.__name__}.txt", "a")
+            f = open(f"../local/arch_1d_spec_attr/{retriever.__class__.__name__}.txt", "a")
             f.write(f"{json.dumps(stats)}\n")
             f.close()

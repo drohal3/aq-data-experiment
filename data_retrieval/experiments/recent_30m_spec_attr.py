@@ -56,6 +56,6 @@ def run_experiment():
                 "records_length": records_length,
                 "response_stats": response["stats"]
             }
-            f = open(f"local/recent_30m_spec_attr/{retriever.__class__.__name__}_30m_attr.txt", "a")
+            f = open(f"../local/recent_30m_spec_attr/{retriever.__class__.__name__}_30m_attr.txt", "a")
             f.write(f"{json.dumps(stats)}\n")
             f.close()

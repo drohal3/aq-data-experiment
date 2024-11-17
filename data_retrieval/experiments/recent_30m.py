@@ -46,7 +46,7 @@ def run_experiment():
                 dt2 = datetime.strptime(latest_item_time, DATE_TIME_FORMAT)
                 latest_item_delta = (dt2 - dt1).total_seconds()
 
-                f = open(f"local/recent_30m_all_attr/devices/{retriever.__class__.__name__}_{device}_30m.txt", "a")
+                f = open(f"../local/recent_30m_all_attr/devices/{retriever.__class__.__name__}_{device}_30m.txt", "a")
                 for record in records:
                     f.write(f"{json.dumps(record)}\n")
                 f.close()
@@ -64,6 +64,6 @@ def run_experiment():
                 "records_length": records_length,
                 "response_stats": response["stats"]
             }
-            f = open(f"local/recent_30m_all_attr/{retriever.__class__.__name__}_30m.txt", "a")
+            f = open(f"../local/recent_30m_all_attr/{retriever.__class__.__name__}_30m.txt", "a")
             f.write(f"{json.dumps(stats)}\n")
             f.close()

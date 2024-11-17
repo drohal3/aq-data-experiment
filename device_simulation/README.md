@@ -24,7 +24,10 @@ Installed docker and docker-compose.
 - create `local` directory in [device_simulation](.) rood directory
 - place IoT device certificates in the directory ([tutorial](https://docs.aws.amazon.com/iot/latest/developerguide/iot-gs.html))
 - configure .env file
+- define parameters in [parameters.yaml](./parameters.yaml)
 - run `docker-compose up` from [device_simulation](.) root directory
 
 > for longer experiments, you might consider to provision an EC2 instance from AWS 
 
+> Please, refer to the official boto3 documentation regarding local configuration required to access AWS resources.
+> [Official documentation](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html)

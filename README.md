@@ -1,53 +1,26 @@
 # AWS timeseries experiment
+The experiment is conducted in the same order as subsections in this document.
+![experiment flow](./experiment_flow.png "Experiment flow")
+
+The code in this repository was used to conduct experiment for **Comparative Analysis of Three IoT Data Storage
+System Architectures on AWS Cloud**, the results of which were compiled into a research paper submitted for [ICSA 2025](https://conf.researchr.org/home/icsa-2025) conference.
+
+
+## 1. Infrastructure provisioning
+IaC code written in Terraform is located in [infrastructure](./infrastructure) directory.
+
+The code can be used to provision an identical infrastructure setup as used in the experiment.
+
+## 2. Data simulation
+Python script for device simulation is located in [device_simulation](./device_simulation) directory.
+
+## 3. Data retrieval
+Python scripts used for data retrievals are located in [data_retrieval](./data_retrieval) directory.
+
+## 4. Experiment analysis
+Python scripts used to plot metrics collected during data retrieval are located in [analysis](./analysis) directory.
 
 Document is work in progress!
 
 ## IoT device simulator
 Source code located in [device_simulation](./device_simulation)
-
-to simulate devices:
-
-- edit [.env](./device_simulation/.env) in [device_simulation](./device_simulation)
-- define parameters in [parameters.yaml](./device_simulation/parameters.yaml) 
-- run ```docker-compose up``` from [device_simulation](./device_simulation)
-- wait for script to finish
-
-```bash
-docker-compose --file=./device_simulation/docker-compose.yml up 
-```
-
-## Data retrieval
-Source code located in [data_retrieval](./data_retrieval)
-
-The code in the repository intends to compare data retrieval from various data sources in AWS.
-The experiment is conducted in Python with [boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/boto3.html) library.
-
-> Please, refer to the official boto3 documentation regarding local configuration required to access AWS resources.
-> [Official documentation](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html)
-
-### DynamoDB
-settings:
-- provisioned capacity - it is assumed, the data loads will be predictable with no expected data bursts
-
-observations:
-- data can be queried using device_id (partition key) and time (sort key)
-- in provisioned mode, write and read capacity must be adjusted
-
-
-### Kinesis
-settings:
-- shard hash key is calculated from device_id using md5
-- the implemented script does not filter returned items from the ones that belong to different devices but are stored in the same shard
-- the implemented script does not select specific parameters - returns all
-
-observations:
-- max 10000 items per request (???)
-- can't query items by device_id or timestamp (kinda can with kinesis iterator "at_timestamp")... returns all content in the shard
-- as consequence of the above two, the efficiency decreases by adding devices and number of items returned and needed to be filtered out increases which leads to the need for subsequent requests.
-- requires multiple requests to find the correct shard - delays the request!
-
-### S3
-
-observations:
-- complexity when used together with Kinesis - recent data must be retrieved from kinesis
-- 
