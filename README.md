@@ -19,8 +19,3 @@ Python scripts used for data retrievals are located in [data_retrieval](./data_r
 
 ## 4. Experiment analysis
 Python scripts used to plot metrics collected during data retrieval are located in [analysis](./analysis) directory.
-
-Document is work in progress!
-
-## IoT device simulator
-Source code located in [device_simulation](./device_simulation)
