@@ -4,7 +4,7 @@ import statistics
 
 data_dynamo = []
 
-PATH = "local/recent_1m_spec_attr"
+PATH = "../local/recent_1m_spec_attr"
 
 with open(f'{PATH}/DynamoDBRetriever_1m_attr.txt', 'r') as file:
     # Read each line in the file
@@ -39,5 +39,5 @@ data = [data_dynamo, data_kinesis, data_timestream]
 plt.boxplot(data)
 # plt.title("Retrieval time of 1m recent data")
 plt.ylabel("seconds")
-plt.xticks([1, 2, 3], ["DynamoDB", "Kinesis Data Stream", "Timestream"])
+plt.xticks([1, 2, 3], ["Option 0\nDynamoDB", "Option 1\nKinesis Data Streams", "Option 2\nTimestream"])
 plt.show()

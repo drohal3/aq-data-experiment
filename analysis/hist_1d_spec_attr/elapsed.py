@@ -3,7 +3,7 @@ import statistics
 import json
 import statistics
 
-PATH = "local/arch_1d_spec_attr"
+PATH = "../local/arch_1d_spec_attr"
 
 data_dynamo = []
 with open(f'{PATH}/DynamoDBRetriever.txt', 'r') as file:
@@ -42,5 +42,5 @@ data = [data_dynamo, data_s3, data_timestream]
 plt.boxplot(data)
 # plt.title("Retrieval time of 1d historical data")
 plt.ylabel("seconds")
-plt.xticks([1, 2, 3], ["DynamoDB", "S3", "Timestream"])
+plt.xticks([1, 2, 3], ["Option 0\nDynamoDB", "Option 1\nS3", "Option 2\nTimestream"])
 plt.show()

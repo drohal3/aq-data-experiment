@@ -3,19 +3,32 @@
 ## Preconditions
 Logged in AWS CLI
 
+## Instructions
+- modify expected_devices variable in main.tf file (i.e. 100 devices)
+- run terraform commands: fmt, init, plan and then apply
+
 ## Useful commands
+format terraform files
 ```bash
 terraform fmt
 ```
+
+init terraform
 ```bash
 terraform init
 ```
+
+plan - prints changes to be done
 ```bash
 terraform plan
 ```
+
+apply changes
 ```bash
 terraform apply
 ```
+
+destroy infrastructure
 ```bash
 terraform destroy
 ```
@@ -38,3 +51,5 @@ to get IoT thing certificates, run
 ```bash
 ./scripts/outputsensitive.sh
 ```
+
+# Instructions to provision the infrastructure:

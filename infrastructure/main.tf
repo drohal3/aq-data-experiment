@@ -125,7 +125,7 @@ module "dynamodb_option_experiment" {
   source         = "./modules/dynamodb_option"
   iot_topic      = var.iot_topic_experiment
   write_capacity = var.expected_devices
-  read_capacity = 1
+  read_capacity = var.expected_devices
   table_name = "aq_measurements_experiment"
   tags = {
     app = "aq_data",
