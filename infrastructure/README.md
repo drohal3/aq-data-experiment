@@ -51,5 +51,3 @@ to get IoT thing certificates, run
 ```bash
 ./scripts/outputsensitive.sh
 ```
-
-# Instructions to provision the infrastructure:
